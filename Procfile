@@ -1,1 +1,1 @@
-web: gunicorn ShipSecure.asgi --log-file -
+web: gunicorn ShipSecure.wsgi --log-file -
