@@ -15,16 +15,17 @@ from django.conf.urls import url
 from django.urls import path
 import django
 from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
 from shipment.consumers import *
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ShipSecure.settings')
 django.setup()
 
-application = get_asgi_application()
 
 websocket_urlpatterns = [
     path('ws/Shipment/<str:room_id>/', MyConsumer.as_asgi())
 ]
-
 application = ProtocolTypeRouter({
-    "websocket": URLRouter(websocket_urlpatterns)
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack( URLRouter(websocket_urlpatterns))
 })
+
