@@ -1,0 +1,1 @@
+web: gunicorn ShipSecure.asgi --log-file -
