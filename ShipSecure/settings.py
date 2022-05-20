@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'rest_framework_simplejwt',
     'accounts.apps.AccountsConfig',
     'shipment.apps.ShipmentConfig',
@@ -49,12 +50,28 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
 
 ROOT_URLCONF = 'ShipSecure.urls'
 
