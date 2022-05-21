@@ -12,6 +12,7 @@ from django.contrib.auth.signals import user_logged_in
 from .Helper import send_otp_mobile
 from django.contrib.auth.models import update_last_login
 
+
 # Create your views here.
 class LoginApi(APIView):
     def post(self, request, *args, **kwargs):
@@ -26,14 +27,14 @@ class LoginApi(APIView):
         if user.role == "Customer":
             data = BasicUserSerializer(user)
         elif user.role == "Company":
-            # if user.is_Verified == False:
-            #     return Response("Your Company is Not Verified", status=status.HTTP_404_NOT_FOUND)
+            if not user.is_Verified:
+                return Response("Your Company is Not Verified", status=status.HTTP_404_NOT_FOUND)
             data = CompanyUserSerializer(user)
         else:
             data = GetAllDriverSerializer(user)
         # user_logged_in.send(sender=user.__class__, request=request, user=user) if we do this it send signal every time
         # from django.contrib.auth.models import update_last_login check using this
-        # update_last_login(None, user)
+        update_last_login(None, user)
         refresh = RefreshToken.for_user(user)
         responce_data = {
             'access_token': str(refresh.access_token),
@@ -44,6 +45,7 @@ class LoginApi(APIView):
 
 class RegisterApi(APIView):
     serializers_class = BasicUserSerializer
+
     def post(self, request):
         serializers = self.serializers_class(data=request.data)
         if serializers.is_valid():

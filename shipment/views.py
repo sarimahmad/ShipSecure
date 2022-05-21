@@ -56,10 +56,9 @@ class GetAllShipment(APIView):
             shipments = {"InProgress": [], "Uncompleted": [], "Not_Started": [], "Completed": [], "Cancelled": []}
             for i in data:
                 status = StatusSerializer(i.shipment_all_status, many=True).data
-                if i.company is None:
+                if i.company is None or i.driver is None:
                     serializer = GetShipmentSerializer(i)
                     shipments['Uncompleted'].append(serializer.data)
-
                 elif len(status) == 0:
                     serializer = GetShipmentSerializer(i)
                     shipments["Not_Started"].append(serializer.data)
@@ -80,7 +79,7 @@ class GetAllShipment(APIView):
             return Response(shipments)
         elif request.user.role == 'Company':
             data = request.user.Assign_to.all()
-            shipments = {"InProgress": [], "Uncompleted": [], "Not_Started": [], "Completed": [], "Cancelled": []}
+            shipments = {"InProgress": [], "Not_Started": [], "Completed": [], "Cancelled": []}
             for i in data:
                 status = StatusSerializer(i.shipment_all_status, many=True).data
                 if len(status) == 0:
@@ -104,7 +103,7 @@ class GetAllShipment(APIView):
             return Response(shipments)
         else:
             data = request.user.Assign_to_Driver.all()
-            shipments = {"InProgress": [], "Uncompleted": [], "Not_Started": [], "Completed": [], "Cancelled": []}
+            shipments = {"InProgress": [], "Not_Started": [], "Completed": [], "Cancelled": []}
             for i in data:
                 status = StatusSerializer(i.shipment_all_status, many=True).data
                 if len(status) == 0:
@@ -135,6 +134,7 @@ class AssignShipment(APIView):
     def post(self, request, format=None):
         C_id = request.data['c_id']
         S_id = request.data['s_id']
+        cost = request.data['cost']
         try:
             shipment = WholeShipment.objects.get(pk=S_id)
         except Exception as e:
@@ -142,6 +142,7 @@ class AssignShipment(APIView):
         result = CheckingCompanyDriverFree(C_id)
         if result:
             shipment.company_id = C_id
+            shipment.totalCost = cost
             shipment.save()
             return Response("Shipment Assign", status=status.HTTP_200_OK)
         else:
@@ -235,15 +236,3 @@ class GetShipmentDetails(APIView):
         return Response(serializers_data, status=status.HTTP_200_OK)
 
 
-class AssignCostToShipment(APIView):
-    def post(self, request):
-        rate = int(request.data['rate'])
-        S_id = request.data['s_id']
-        print(rate)
-        try:
-            shipment = WholeShipment.objects.get(pk=S_id)
-        except Exception as e:
-            return Response("Shipment Does Not Exits", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        shipment.totalCost = rate
-        shipment.save()
-        return Response("Shipment rate Assign")

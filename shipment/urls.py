@@ -11,5 +11,4 @@ urlpatterns = [
     path('Al_Vehicle_Cat/', ShowVehiclesCategory.as_view(), name='Al_Vehicle_Cat'),
     path('update_status/', Change_Status.as_view(), name='Change_Status'),
     path('ShipmentDetails/<int:id>/', GetShipmentDetails.as_view(), name='Shipment_Details_api'),
-    path('ShipmentCost/', AssignCostToShipment.as_view(), name='Shipment_Details_api'),
 ]

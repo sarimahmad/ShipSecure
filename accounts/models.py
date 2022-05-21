@@ -16,8 +16,7 @@ class Company(models.Model):
     coverage = models.JSONField(null=True, blank=True)
     mailing_address = models.CharField(max_length=1000, blank=True)
     allPakistan = models.BooleanField(default=False)
-    website = models.URLField(max_length=200, null=True, blank=True,
-                              error_messages={"Wrong": "Pull right url of website"})
+    website = models.CharField(max_length=200, null=True, blank=True)
     cnic = models.CharField(max_length=13)
     cnic_front = models.ImageField(upload_to="Cnic_front/", null=True, blank=True)
     cnic_back = models.ImageField(upload_to="Cnic_back/", null=True, blank=True)
@@ -102,18 +101,19 @@ def delete_driver_post_delete(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=BasicUser)
 def send_email_post_save(sender, instance, created, *args, **kwargs):
-    if instance.role == 'Driver':
+    if instance.role == 'Driver' or instance.role == 'Customer':
         pass
     else:
         if created:
-            print("Created")
             try:
-                print("Doing")
                 otp_to_send = random.randint(1000, 9999)
                 instance.otp = otp_to_send
                 instance.save()
                 subject = "Your Email Needs to be Verified"
-                message = f"Hi , Click on the link to verify Email {otp_to_send}"
+                message = f"Hi , Thanks for Registering Your Company" \
+                          f"We Have received Your Credentials" \
+                          f"We will Sent you a mail after approving your Company" \
+                          f"It will take Some Time Thanks "
                 email_from = settings.EMAIL_HOST_USER
                 email_to = [instance.email]
                 send_mail(subject, message, email_from, email_to)
@@ -127,18 +127,17 @@ def send_email_post_save(sender, instance, created, *args, **kwargs):
 
 @receiver(post_save, sender=BasicUser)
 def Verified_post_save(sender,created, instance, *args, **kwargs):
-    if not created:
-        print(created)
+    if instance.is_active == False:
         if instance.is_Verified:
             try:
-                print("Hello world")
-                # otp_to_send = random.randint(1000, 9999)
-                # instance.otp = otp_to_send
-                # instance.save()
-                # subject = "Your Email Needs to be Verified"
-                # message = f"Hi , Click on the link to verify Email {otp_to_send}"
-                # email_from = settings.EMAIL_HOST_USER
-                # email_to = [instance.email]
-                # send_mail(subject, message, email_from, email_to)
+                print("signal")
+                instance.is_active = True
+                instance.save()
+                subject = "Your Email is Verified"
+                message = f"Hi , Your Can Login Now" \
+                          f"Congratulations"
+                email_from = settings.EMAIL_HOST_USER
+                email_to = [instance.email]
+                send_mail(subject, message, email_from, email_to)
             except Exception as e:
                 print(e)
