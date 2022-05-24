@@ -139,7 +139,7 @@ CACHES = {
    }
 }
 
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 
 # Password validation
@@ -177,7 +177,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -194,3 +193,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'sarimking12@gmail.com'
 EMAIL_HOST_PASSWORD = 'SARIMahmad@09871234'
+
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_ACCESS_KEY_ID ='AKIATUJFH5NCSBO3LS4K'
+AWS_S3_SECRET_ACCESS_KEY ='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'
+AWS_STORAGE_BUCKET_NAME ='sarimbucket'
+AWS_QUERYSTRING_AUTH =False
