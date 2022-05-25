@@ -215,7 +215,7 @@ class ChangeVehicleRateSerializer(serializers.ModelSerializer):
         fields = ('vehicles', 'rate', 'user')
 
     def validate(self, attrs):
-        if attrs.get('rate') > 10000:
+        if attrs.get('rate') > 100000:
             raise serializers.ValidationError({"Bad": "Rate is Too High"})
         else:
             print("Good")

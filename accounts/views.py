@@ -262,13 +262,9 @@ class VehiclesRate(APIView):
         obj = VehicelRate.objects.filter(user=request.user)
         for i in obj:
             if i.vehicles.unique_id == request.data['vehicles']:
-                serializers = ChangeVehicleRateSerializer(instance=i, data=request.data)
-                if serializers.is_valid():
-                    serializers.save()
-                    serialized_data = serializers.data
-                    return Response({"New Rate": serialized_data})
-                else:
-                    return Response(serializers.errors)
+                i.rate = request.data['rate']
+                i.save()
+        return Response("Rate Change")
 
 
 # Can be Done in Another way by Checking the time on the Shipment that assign to driver if the date
