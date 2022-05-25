@@ -1,4 +1,5 @@
 # Create your views he
+import json
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -6,10 +7,7 @@ from .serializers import *
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import BasicUser
-
 from rest_framework.exceptions import AuthenticationFailed
-from django.contrib.auth.signals import user_logged_in
-from .Helper import send_otp_mobile
 from django.contrib.auth.models import update_last_login
 
 
@@ -111,8 +109,15 @@ class CompanyApi(APIView):
 
     # permission_classes = [IsAuthenticated,]
     def post(self, request):
-        serializers = self.serializers_class(data=request.data)
 
+        data = {'company': {}}
+        for key, val in request.data.items():
+            if key == 'name' or key == 'owner_Name' or key == 'cnic' or key == 'website' or key == 'Ntn_number' or key == 'Ntn_number' or key == 'cnic_front' or key == 'cnic_back' or key == 'Ntn_picture' or key == 'Registration_Certificate':
+                data['company'][key] = val
+            else:
+                data[key] = val
+
+        serializers = self.serializers_class(data=data)
         if serializers.is_valid():
             user = serializers.save()
             user.save()
@@ -132,7 +137,18 @@ class AddDriverApi(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        data = request.data
+        data = {"driver": {}}
+        print(request.data)
+        for key, val in request.data.items():
+            if key == 'profile' or key == 'cnic_front' or key == 'cnic_back' or key == 'License':
+                data["driver"][key] = val
+            elif key == 'vehicle_driver':
+                data["driver"][key] = json.loads(val)
+            else:
+                if key == 'number':
+                   data[key]=int(val)
+                else:
+                    data[key] = val
         serializers = self.serializers_class(data=data)
         if serializers.is_valid():
 
