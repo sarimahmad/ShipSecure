@@ -114,6 +114,8 @@ class CompanyApi(APIView):
         for key, val in request.data.items():
             if key == 'name' or key == 'owner_Name' or key == 'cnic' or key == 'website' or key == 'Ntn_number' or key == 'Ntn_number' or key == 'profile' or key == 'Ntn_picture' or key == 'Registration_Certificate':
                 data['company'][key] = val
+            elif key == 'coverage':
+                data["company"][key] = json.loads(val)
             else:
                 data[key] = val
 
