@@ -14,7 +14,7 @@ class SenderReceiver(models.Model):
     city = models.CharField(max_length=300, blank=True, null=True)
     building = models.CharField(max_length=30)
     name = models.CharField(max_length=300, blank=True, null=True)
-    phone = models.IntegerField(blank=True, null=True,default=0)
+    phone = models.CharField(max_length=13, blank=True, null=True)
     streetNo = models.CharField(max_length=100)
     flootUnit = models.CharField(max_length=50)
 
