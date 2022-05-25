@@ -18,8 +18,6 @@ class Company(models.Model):
     allPakistan = models.BooleanField(default=False)
     website = models.CharField(max_length=200, null=True, blank=True)
     cnic = models.CharField(max_length=13)
-    cnic_front = models.ImageField(upload_to="Cnic_front/", null=True, blank=True)
-    cnic_back = models.ImageField(upload_to="Cnic_back/", null=True, blank=True)
     profile = models.ImageField(upload_to="Company_profile/", null=True, blank=True)
     Ntn_number = models.CharField(max_length=15)
     Ntn_picture = models.ImageField(upload_to="Ntn_Number/", null=True, blank=True)

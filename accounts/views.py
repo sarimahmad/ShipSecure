@@ -112,7 +112,7 @@ class CompanyApi(APIView):
 
         data = {'company': {}}
         for key, val in request.data.items():
-            if key == 'name' or key == 'owner_Name' or key == 'cnic' or key == 'website' or key == 'Ntn_number' or key == 'Ntn_number' or key == 'cnic_front' or key == 'cnic_back' or key == 'Ntn_picture' or key == 'Registration_Certificate':
+            if key == 'name' or key == 'owner_Name' or key == 'cnic' or key == 'website' or key == 'Ntn_number' or key == 'Ntn_number' or key == 'profile' or key == 'Ntn_picture' or key == 'Registration_Certificate':
                 data['company'][key] = val
             else:
                 data[key] = val
@@ -166,7 +166,6 @@ class AddDriverApi(APIView):
             return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def get(self, request):
-        data = request.user.Company_Driver.all()
 
         drivers = []
         data = BasicUser.objects.filter(role="Driver")
