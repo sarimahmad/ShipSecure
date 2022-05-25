@@ -61,8 +61,7 @@ class commpanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = (
-            'name', 'owner_Name', 'mailing_address', 'coverage', 'allPakistan', 'website', 'cnic', 'cnic_front',
-            'cnic_back',
+            'name', 'owner_Name', 'mailing_address', 'coverage', 'allPakistan', 'website', 'cnic', 'profile',
             'Ntn_number',
             'Ntn_picture', 'Registration_Certificate')
 
