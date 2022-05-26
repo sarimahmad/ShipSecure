@@ -94,8 +94,11 @@ class VehicelRate(models.Model):
 # Work on Signal It is very HelpFull and Interesting
 @receiver(post_delete, sender=BasicUser)
 def delete_driver_post_delete(sender, instance, *args, **kwargs):
-    instance.driver.delete()
-    instance.company.delete()
+    if instance.role =='Company':
+        instance.company.delete()
+    else:
+         instance.driver.delete()
+
 
 
 @receiver(post_save, sender=BasicUser)

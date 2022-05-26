@@ -228,14 +228,14 @@ class ChangeVehicleRateSerializer(serializers.ModelSerializer):
 class Update_Customer_ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser
-        fields = ('username', 'first_name', 'last_name', 'city',)
+        fields = ( 'first_name', 'last_name', 'city', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('username', instance.username)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.city = validated_data.get('city', instance.city)
+        instance.profile = validated_data.get('profile', instance.profile)
         instance.save()
         return instance
 

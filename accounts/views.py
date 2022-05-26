@@ -327,11 +327,14 @@ class ShowCompanyVehicleDetails(APIView):
 
 class UpdateProfile(APIView):
     def put(self, request, id):
-        try:
-            user = BasicUser.objects.get(id=id)
-            serializers = Update_Customer_ProfileSerializer(instance=user, data=request.data)
-            if serializers.is_valid():
-                serializers.save()
-            return Response({"data": serializers.data})
-        except Exception as e:
-            return Response({"message": "User Not Found"}, status=status.HTTP_200_OK)
+        # try:
+        user = BasicUser.objects.get(id=id)
+        serializers = Update_Customer_ProfileSerializer(instance=user, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            user_serializer = BasicUserSerializer(user)
+            return Response({"data": user_serializer.data})
+        else:
+            return Response(serializers.errors)
+        # except Exception as e:
+        #     return Response({"message": "User Not Found"}, status=status.HTTP_404_NOT_FOUND)
