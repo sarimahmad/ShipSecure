@@ -81,6 +81,7 @@ class Company_Vehicles(models.Model):
     type = models.ForeignKey("shipment.Vehicles", on_delete=models.CASCADE, default=None)
     registration_number = models.CharField(max_length=255)
     registration_city = models.CharField(max_length=255)
+    Vehicle_Busy = models.BooleanField(default=False)
     company = models.ForeignKey(BasicUser, related_name="All_Vehicles", on_delete=models.CASCADE, default=None)
 
 

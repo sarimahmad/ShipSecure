@@ -31,6 +31,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.set_password(validated_data['new_password'])
         instance.save()
+        return instance
 
 
 class BasicUserSerializer(serializers.ModelSerializer):
@@ -53,9 +54,7 @@ class BasicUserSerializer(serializers.ModelSerializer):
         return user
 
 
-# Change Password Serializer
 # Forgot Password Are Remaining
-
 
 class commpanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,8 +106,6 @@ class GetCompany(serializers.ModelSerializer):
 # Driver Part
 
 
-
-
 # For more than one field Always Use many in Serializers and every where and this is
 # very important you always forgot in dongeraaa
 # You Waste Half Hour on this
@@ -129,11 +126,11 @@ class GetAllDriverSerializer(serializers.ModelSerializer):
     group = serializers.IntegerField(write_only=True)
     groups = GroupSerializer(many=True, read_only=True)
     vehicle = VehicleSerializer(many=True, read_only=True)
+
     class Meta:
         model = BasicUser
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
-
 
 
 class CreateDriverSerializer(serializers.ModelSerializer):
@@ -144,6 +141,7 @@ class CreateDriverSerializer(serializers.ModelSerializer):
         model = Driver
         fields = (
             'profile', 'cnic_front', 'cnic_back', 'vehicle_driver', 'driver_onWork', 'driver_isBusy', 'company')
+
 
 class DriverUserSerializer(serializers.ModelSerializer):
     company = CompanyUserSerializer(read_only=True)
@@ -230,11 +228,16 @@ class ChangeVehicleRateSerializer(serializers.ModelSerializer):
 class Update_Customer_ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser
-        fields = ('first_name', 'last_name', 'email', 'number', 'city',)
+        fields = ('username', 'first_name', 'last_name', 'city',)
         extra_kwargs = {'password': {'write_only': True}}
 
     def update(self, instance, validated_data):
-        pass
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.city = validated_data.get('city', instance.city)
+        instance.save()
+        return instance
 
 # class DriverTimeTableSerializer(serializers.ModelSerializer):
 #     class Meta:

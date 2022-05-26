@@ -1,6 +1,6 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumber
-from accounts.models import BasicUser
+from accounts.models import BasicUser, Company_Vehicles
 from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -48,7 +48,8 @@ class WholeShipment(models.Model):
     Date = models.DateField(default=None, null=True, blank=True)
     driver = models.ForeignKey(BasicUser, on_delete=models.CASCADE, related_name="Assign_to_Driver", null=True,
                                blank=True)
-
+    real_vehicle = models.ForeignKey(Company_Vehicles,on_delete=models.CASCADE, related_name="Vehicle_to_Ship", null=True,
+                               blank=True)
     totalCost = models.IntegerField(null=True, blank=True, default=0)
     company = models.ForeignKey(BasicUser, on_delete=models.CASCADE, related_name="Assign_to", null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)

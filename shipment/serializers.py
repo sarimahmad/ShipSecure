@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from accounts.serializers import BasicUserSerializer, CompanyUserSerializer, GetAllDriverSerializer
+from accounts.serializers import BasicUserSerializer, CompanyUserSerializer, GetAllDriverSerializer, ShowCompanyVehicles
 
 
 class SenderReceiverSerializer(serializers.ModelSerializer):
@@ -24,6 +24,7 @@ class StatusSerializer(serializers.ModelSerializer):
 class GetShipmentSerializer(serializers.ModelSerializer):
     user = BasicUserSerializer(read_only=True)
     company = CompanyUserSerializer(read_only=True)
+    real_vehicle = ShowCompanyVehicles(read_only=True)
     sender = SenderReceiverSerializer()
     receiver = SenderReceiverSerializer()
     driver = GetAllDriverSerializer(read_only=True)

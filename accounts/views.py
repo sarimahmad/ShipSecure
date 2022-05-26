@@ -148,7 +148,7 @@ class AddDriverApi(APIView):
                 data["driver"][key] = json.loads(val)
             else:
                 if key == 'number':
-                   data[key]=int(val)
+                    data[key] = int(val)
                 else:
                     data[key] = val
         serializers = self.serializers_class(data=data)
@@ -180,7 +180,7 @@ class AddDriverApi(APIView):
 
 
 class DeleteDriver(APIView):
-    permission_classes = [IsAuthenticated, ]
+    # permission_classes = [IsAuthenticated, ]
 
     def delete(self, request, key_id):
         try:
@@ -189,6 +189,18 @@ class DeleteDriver(APIView):
             return Response("User Does Not Exits", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         driver.delete()
         return Response("Your Driver Has Been Deleted", status=status.HTTP_200_OK)
+
+
+class DeleteVehicle(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def delete(self, request, key_id):
+        try:
+            vehicle = Company_Vehicles.objects.get(id=key_id)
+        except Exception as e:
+            return Response("Vehicle Does Not Exits", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        vehicle.delete()
+        return Response("Your Vehicle Has Been Deleted", status=status.HTTP_200_OK)
 
 
 # You are right, even after you remove the JWT token it remains valid token for a period of time until it expires.
@@ -257,6 +269,17 @@ class VehiclesRate(APIView):
         serialized_data = serializer.data
         return Response(serialized_data)
 
+    def delete(self, request):
+        id = request.data['vehicles']
+        obj = VehicelRate.objects.filter(user=request.user)
+        try:
+            for i in obj:
+                if i.vehicles.unique_id == id:
+                    i.delete()
+            return Response("Vehicle Rate Deleted")
+        except Exception as e:
+            return Response("Id Not Found", status=status.HTTP_404_NOT_FOUND)
+
     def put(self, request):
 
         obj = VehicelRate.objects.filter(user=request.user)
@@ -281,17 +304,34 @@ class GetDriverDetails(APIView):
     # permission_classes = [IsAuthenticated, ]
 
     def get(self, request, id):
-        driver = BasicUser.objects.get(id=id)
-        serializers = GetAllDriverSerializer(driver)
-        serializers_data = serializers.data
-        return Response(serializers_data, status=status.HTTP_200_OK)
+        try:
+            driver = BasicUser.objects.get(id=id)
+            serializers = GetAllDriverSerializer(driver)
+            serializers_data = serializers.data
+            return Response(serializers_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": "Driver Not Found"}, status=status.HTTP_200_OK)
 
 
 class ShowCompanyVehicleDetails(APIView):
     # permission_classes = [IsAuthenticated, ]
-
     def get(self, request, id):
-        vehicle = Company_Vehicles.objects.get(id=id)
-        serializers = ShowCompanyVehicles(vehicle)
-        serializers_data = serializers.data
-        return Response(serializers_data, status=status.HTTP_200_OK)
+        try:
+            vehicle = Company_Vehicles.objects.get(id=id)
+            serializers = ShowCompanyVehicles(vehicle)
+            serializers_data = serializers.data
+            return Response(serializers_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": "Vehicle Not Found"}, status=status.HTTP_200_OK)
+
+
+class UpdateProfile(APIView):
+    def put(self, request, id):
+        try:
+            user = BasicUser.objects.get(id=id)
+            serializers = Update_Customer_ProfileSerializer(instance=user, data=request.data)
+            if serializers.is_valid():
+                serializers.save()
+            return Response({"data": serializers.data})
+        except Exception as e:
+            return Response({"message": "User Not Found"}, status=status.HTTP_200_OK)

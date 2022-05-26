@@ -28,7 +28,8 @@ class MyConsumer(AsyncWebsocketConsumer):
     async def location(self, event):
         lat = event['lat']
         long = event['lng']
-
+        print(lat)
+        print(long)
         # send message to room group
         await self.send(text_data=json.dumps(
             {

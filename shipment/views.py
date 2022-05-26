@@ -9,7 +9,8 @@ from accounts.serializers import CompanyUserSerializer
 from rest_framework import status
 from .Helper import CheckingCompanyDriverFree, \
     CheckingCompanyHasDriver, \
-    DriverAssign_Process, AllDriversFreeCompany
+    DriverAssign_Process, AllDriversFreeCompany, CheckingCompanyVehicleFree, \
+    AllVehicleFreeCompany, VehicleAssign_Process
 
 
 class Addshipment(APIView):
@@ -139,14 +140,20 @@ class AssignShipment(APIView):
             shipment = WholeShipment.objects.get(pk=S_id)
         except Exception as e:
             return Response("Shipment Does Not Exits", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        result = CheckingCompanyDriverFree(C_id)
-        if result:
+        CheckingDriver = CheckingCompanyDriverFree(int(C_id))
+        CheckingVehicle = CheckingCompanyVehicleFree(int(C_id))
+        print(CheckingVehicle)
+        print(CheckingDriver)
+        if CheckingDriver and CheckingVehicle:
             shipment.company_id = C_id
             shipment.totalCost = cost
             shipment.save()
             return Response("Shipment Assign", status=status.HTTP_200_OK)
+        elif not CheckingVehicle:
+            return Response({"Status": 0, "Message": "Vehicle Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
         else:
-            return Response("Driver Not Free", status=status.HTTP_404_NOT_FOUND)
+            return Response({"Status": 1, "Message": "Vehicle Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ShowCompanies(APIView):
@@ -189,12 +196,21 @@ class AssignShipment_toDriver(APIView):
         except Exception as e:
             return Response("Shipment Does Not Exits", status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
+
             drivers = AllDriversFreeCompany(shipment.company_id)
-            value = DriverAssign_Process(drivers)
-            shipment.driver = value[0]
-            driver = Driver.objects.get(id=value[0].driver.id)
-            driver.driver_isBusy = True
-            driver.save()
+            vehicle = AllVehicleFreeCompany(shipment.company_id)
+            if len(drivers) == 0 or len(vehicle) == 0:
+                return Response("No Driver or Vehicle", status=status.HTTP_404_NOT_FOUND)
+            driver_assign_tobe = DriverAssign_Process(drivers)
+            vehicle_assign_tobe = VehicleAssign_Process(vehicle)
+            shipment.driver = driver_assign_tobe[0]
+            shipment.real_vehicle = vehicle_assign_tobe[0]
+            driver_IsBusy = Driver.objects.get(id=driver_assign_tobe[0].driver.id)
+            vehicle_IsBusy = Company_Vehicles.objects.get(id=vehicle_assign_tobe[0].id)
+            driver_IsBusy.driver_isBusy = True
+            vehicle_IsBusy.Vehicle_Busy = True
+            driver_IsBusy.save()
+            vehicle_IsBusy.save()
             shipment.save()
 
         except Exception as e:
@@ -220,19 +236,30 @@ class Change_Status(APIView):
     serializers_class = StatusSerializer
 
     def post(self, request, format=None):
+        s_id = request.data["shipment"]
         serializers = self.serializers_class(data=request.data)
         if serializers.is_valid():
             serializers.save()
             serializers_data = serializers.data
+            if int(request.data["status"]) == 6 or int(request.data["status"]) == 7:
+                shipment = WholeShipment.objects.get(id=s_id)
+                driver_obj_id = shipment.driver.driver.id
+                driver = Driver.objects.get(id=driver_obj_id)
+                vehicle = Company_Vehicles.objects.get(id=shipment.real_vehicle.id)
+                driver.driver_isBusy = False
+                vehicle.Vehicle_Busy = False
+                driver.save()
+                vehicle.save()
             return Response({"Status_Updated": serializers_data})
         return Response(serializers.errors)
 
 
 class GetShipmentDetails(APIView):
     def get(self, request, id):
-        shipment = WholeShipment.objects.get(id=id)
-        serializers = GetShipmentSerializer(shipment)
-        serializers_data = serializers.data
-        return Response(serializers_data, status=status.HTTP_200_OK)
-
-
+        try:
+            shipment = WholeShipment.objects.get(id=id)
+            serializers = GetShipmentSerializer(shipment)
+            serializers_data = serializers.data
+            return Response(serializers_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": "Shipment Not Found"}, status=status.HTTP_200_OK)
