@@ -1,7 +1,7 @@
 import dj_database_url
 from ShipSecure.settings.base import *
 
-ALLOWED_HOSTS = ['https://ship-secure.herokuapp.com']
+ALLOWED_HOSTS = ['ship-secure.herokuapp.com']
 
 DEBUG = True
 
