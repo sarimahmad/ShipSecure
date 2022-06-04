@@ -332,7 +332,10 @@ class UpdateProfile(APIView):
         serializers = Update_Customer_ProfileSerializer(instance=user, data=request.data)
         if serializers.is_valid():
             serializers.save()
-            user_serializer = BasicUserSerializer(user)
+            if user.role =='Customer':
+                user_serializer = BasicUserSerializer(user)
+            else:
+                user_serializer = CompanyUserSerializer(user)
             return Response({"data": user_serializer.data})
         else:
             return Response(serializers.errors)

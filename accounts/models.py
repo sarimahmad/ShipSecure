@@ -9,7 +9,6 @@ from django.conf import settings
 import random
 
 
-
 class Company(models.Model):
     name = models.CharField(max_length=255, blank=True)
     owner_Name = models.CharField(max_length=255, blank=True)
@@ -54,7 +53,7 @@ class BasicUser(AbstractUser):
         'null': 'This feild cannot be nulll'
     })
     password = models.CharField(max_length=255, blank=True, null=True)
-    number = models.CharField(max_length=13,blank=True, null=True)
+    number = models.CharField(max_length=13, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     role = models.CharField(max_length=10, choices=Regitser_choice)
     is_Verified = models.BooleanField(default=False)
@@ -70,10 +69,6 @@ class BasicUser(AbstractUser):
     def __str__(self):
         return f"{self.email} {self.role}"
 
-
-# class DriverTimeTable(models.Model):
-#     driver = models.ForeignKey(BasicUser,on_delete=models.CASCADE)
-#     time = models.DateTimeField(unique=True, default=None)
 
 class Company_Vehicles(models.Model):
     name = models.CharField(max_length=255)
@@ -94,11 +89,10 @@ class VehicelRate(models.Model):
 # Work on Signal It is very HelpFull and Interesting
 @receiver(post_delete, sender=BasicUser)
 def delete_driver_post_delete(sender, instance, *args, **kwargs):
-    if instance.role =='Company':
+    if instance.role == 'Company':
         instance.company.delete()
     else:
-         instance.driver.delete()
-
+        instance.driver.delete()
 
 
 @receiver(post_save, sender=BasicUser)
@@ -107,6 +101,9 @@ def send_email_post_save(sender, instance, created, *args, **kwargs):
         pass
     else:
         if created:
+            if instance.is_superuser:
+                instance.is_Verified=True
+                instance.save()
             try:
                 otp_to_send = random.randint(1000, 9999)
                 instance.otp = otp_to_send
@@ -124,11 +121,10 @@ def send_email_post_save(sender, instance, created, *args, **kwargs):
                 print(e)
 
 
-
 # Send Mail to company when its verified use If created
 
 @receiver(post_save, sender=BasicUser)
-def Verified_post_save(sender,created, instance, *args, **kwargs):
+def Verified_post_save(sender, created, instance, *args, **kwargs):
     if instance.is_active == False:
         if instance.is_Verified:
             try:
@@ -142,4 +138,5 @@ def Verified_post_save(sender,created, instance, *args, **kwargs):
                 email_to = [instance.email]
                 send_mail(subject, message, email_from, email_to)
             except Exception as e:
+                print("error")
                 print(e)

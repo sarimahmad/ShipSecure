@@ -30,7 +30,6 @@ class MyConsumer(AsyncWebsocketConsumer):
         long = event['lng']
         print(lat)
         print(long)
-        # send message to room group
         await self.send(text_data=json.dumps(
             {
                 'lat': lat,
