@@ -103,6 +103,9 @@ class GetCompany(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
+# Many = True in Many to Many relation
+
+
 # Driver Part
 
 
@@ -228,7 +231,7 @@ class ChangeVehicleRateSerializer(serializers.ModelSerializer):
 class Update_Customer_ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser
-        fields = ( 'first_name', 'last_name', 'city', 'profile')
+        fields = ('first_name', 'last_name', 'city', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
 
     def update(self, instance, validated_data):

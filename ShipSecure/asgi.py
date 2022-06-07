@@ -14,7 +14,7 @@ import django
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from shipment.consumers import *
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ShipSecure.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ShipSecure.settings.development')
 django.setup()
 
 

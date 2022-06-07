@@ -24,3 +24,9 @@ CACHES = {
         }
    }
 }
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_ACCESS_KEY_ID = 'AKIATUJFH5NCVROOIG7M'
+AWS_S3_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'sarimbucket'
+AWS_QUERYSTRING_AUTH = False
